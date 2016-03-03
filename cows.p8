@@ -31,17 +31,19 @@ function _update()
 	vy+=g
 	local speed = 1
 	if(not floored) speed = 0.2
-	if(abs(vx)<1) then
-		if(btn(0)) then vx=vx-speed flipx=true end
-		if(btn(1)) then vx=vx+speed flipx=false end
-	end
-	if(vx<0 and btn(1)) then
-		vx=vx+speed
-		flipx=false
-	end
-	if(vx>0 and btn(0)) then
-		vx=vx-speed
-		flipx=true
+	if(not crouch) then
+		if(abs(vx)<1) then
+			if(btn(0)) then vx=vx-speed flipx=true end
+			if(btn(1)) then vx=vx+speed flipx=false end
+		end
+		if(vx<0 and btn(1)) then
+			vx=vx+speed
+			flipx=false
+		end
+		if(vx>0 and btn(0)) then
+			vx=vx-speed
+			flipx=true
+		end
 	end
 	if(lastflip==true and flipx==false) then
 		x=x+1
