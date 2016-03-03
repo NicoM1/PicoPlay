@@ -149,13 +149,13 @@ function _draw()
 	end
 	
 	if(floored) then
-		spr(frame,x,y,1,1,flipx)
-	else
 		if(not crouch) then
-			spr(2,x,y,1,1,flipx)
+			spr(frame,x,y,1,1,flipx)
 		else
-			spr(4,x,y,1,1,flipx)
+			spr(3,x,y,1,1,flipx)
 		end
+	else
+			spr(2,x,y,1,1,flipx)
 	end
 	print(crouch)
 end
