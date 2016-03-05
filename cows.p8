@@ -35,28 +35,26 @@ fullspeed = 1.7
 
 function _update()
 	vy += g
+
 	local speed = fullspeed
+
 	if(not floored) speed = 0.2
+
 	if(not crouch) then
-		if(btn(0)) then vx = vx-speed flipx=true end
-		if(btn(1)) then vx = vx+speed flipx=false end
+		if(btn(0)) vx = vx-speed flipx = true
+		if(btn(1)) vx = vx+speed flipx = false
 		if(vx > fullspeed) vx = fullspeed
 		if(vx < -fullspeed) vx = -fullspeed
 	end
-	if(lastflip==true and flipx==false) then
-		x = x+1
-	end
-	if(lastflip==false and flipx==true) then
-		x = x-1
-	end
+
+	if(lastflip == true and flipx == false) x = x+1
+	if(lastflip == false and flipx == true) x = x-1
 	lastflip = flipx
 
 	last = vx
 
 	floored = false
-	if(collides(0,1)) then
-		floored = true
-	end
+	if(collides(0,1)) floored = true
 	if(collides(0,vy)) then
 		floored = true
 		if(vy > 0) then
@@ -71,6 +69,7 @@ function _update()
 		vy = 0
 		vx *= 0.7
 	end
+
 	if(floored) then
 		if(not jumppressed and btn(2)) then
 			floored = false
@@ -79,9 +78,7 @@ function _update()
 			printvalue = vx.." "..vy
 		end
 
-		if(not btn(2)) then
-			jumppressed=false
-		end
+		if(not btn(2)) jumppressed=false
 	end
 	y += vy
 
@@ -104,7 +101,7 @@ function _update()
 		vx = 0
 		vy = 0
 	end
-	if vy < 0 then floored = false end
+	if (vy < 0) floored = false
 	crouch = btn(3)
 end
 
