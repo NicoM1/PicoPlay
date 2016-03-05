@@ -1,29 +1,29 @@
 pico-8 cartridge // http://www.pico-8.com
 version 5
 __lua__
-x=0.0 vx=0.0
-y=0.0 vy=0.0
+x = 0.0	vx = 0.0
+y = 0.0	vy = 0.0
 
-voffx=2
-voffy=2
-vsizex=3
-vsizey=6
+voffx = 2
+voffy = 2
+vsizex = 3
+vsizey = 6
 
-camx=0
-camy=0
+camx = 0
+camy = 0
 
-hw=64
+hw = 64
 
-g=0.5
+g = 0.5
 
 jumpspd = 3.5
 
-lastflip=false
-flipx=false
+lastflip = false
+flipx = false
 
-floored=false
+floored = false
 
-crouch=false
+crouch = false
 
 last = 0
 
@@ -34,63 +34,59 @@ printvalue = "null"
 fullspeed = 1.7
 
 function _update()
-	vy+=g
+	vy += g
 	local speed = fullspeed
 	if(not floored) speed = 0.2
 	if(not crouch) then
-		if(btn(0)) then vx=vx-speed flipx=true end
-		if(btn(1)) then vx=vx+speed flipx=false end
+		if(btn(0)) then vx = vx-speed flipx=true end
+		if(btn(1)) then vx = vx+speed flipx=false end
 		if(vx > fullspeed) vx = fullspeed
 		if(vx < -fullspeed) vx = -fullspeed
 	end
 	if(lastflip==true and flipx==false) then
-		x=x+1
+		x = x+1
 	end
 	if(lastflip==false and flipx==true) then
-		x=x-1
+		x = x-1
 	end
-	lastflip=flipx
+	lastflip = flipx
 
 	last = vx
 
-	floored=false
+	floored = false
 	if(collides(0,1)) then
-		floored=true
+		floored = true
 	end
 	if(collides(0,vy)) then
-		floored=true
-		if(vy>0) then
+		floored = true
+		if(vy > 0) then
 			while(not collides(0,1)) do
-				y=y+1
+				y = y+1
 			end
 		else
 			while(not collides(0,-1)) do
-				y=y-1
+				y = y-1
 			end
 		end
-		vy=0
-		vx*=0.7
+		vy = 0
+		vx *= 0.7
 	end
 	if(floored) then
 		if(not jumppressed and btn(2)) then
 			floored = false
-			vy=-jumpspd
+			vy = -jumpspd
 			jumppressed=true
-			printvalue=vx.." "..vy
-		else
-		--	vx*=0.8
+			printvalue = vx.." "..vy
 		end
 
 		if(not btn(2)) then
 			jumppressed=false
 		end
-	else
-		--vx*=0.9
 	end
-	y+=vy
+	y += vy
 
 	if(collides(vx,0)) then
-		if(vx>0) then
+		if(vx > 0) then
 			while(not collides(1,0)) do
 				x = x+1
 			end
@@ -99,17 +95,17 @@ function _update()
 				x = x-1
 			end
 		end
-		vx=0
+		vx = 0
 	end
-	x+=vx
-	if(y>150) then
-		x=0
-		y=0
-		vx=0
-		vy=0
+	x += vx
+	if(y > 150) then
+		x = 0
+		y = 0
+		vx = 0
+		vy = 0
 	end
 	if vy < 0 then floored = false end
-	crouch=btn(3)
+	crouch = btn(3)
 end
 
 function world_to_map(x,y)
@@ -140,24 +136,24 @@ function collides(xoff, yoff)
 		solid(p.x+vsizex-1,p.y+vsizey-1)
 end
 
-timer=0
-frametime=6
-frame=0
-endf=1
+timer = 0
+frametime = 6
+frame = 0
+endf = 1
 function _draw()
 	local camxdif = (x+vx*100)-(camx+hw);
-	camx+=camxdif*0.01;
+	camx += camxdif*0.01;
 	--camera(flr(camx),flr(camy));
 	cls()
 	map(0,0,0,0,100,100)
 
-	if(abs(vx)>0.2) then
-		timer=timer+1
+	if(abs(vx) > 0.2) then
+		timer = timer+1
 	end
-	if(timer>frametime) then
-		timer=0
-		frame=frame+1
-		if(frame>endf) then frame=0 end
+	if(timer > frametime) then
+		timer = 0
+		frame = frame+1
+		if(frame > endf) then frame=0 end
 	end
 
 	if(floored) then
@@ -167,7 +163,7 @@ function _draw()
 			spr(3,x,y,1,1,flipx)
 		end
 	else
-			spr(2,x,y,1,1,flipx)
+		spr(2,x,y,1,1,flipx)
 	end
 	print(printvalue)
 end
