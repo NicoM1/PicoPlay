@@ -34,19 +34,19 @@ function _update()
 	local speed = 1
 	if(not floored) speed = 0.2
 	if(not crouch) then
-		if(abs(vx)<1) then
-			if(btn(0)) then vx=vx-speed flipx=true end
-			if(btn(1)) then vx=vx+speed flipx=false end
-		end
-		if(vx<0 and btn(1)) then
+		if(btn(1)) then
 			vx=vx+speed
 			flipx=false
 		end
-		if(vx>0 and btn(0)) then
+		if(btn(0)) then
 			vx=vx-speed
 			flipx=true
 		end
 	end
+	
+	vx=min(1.4, vx)
+	vx=max(-1.4, vx)
+	
 	if(lastflip==true and flipx==false) then
 		x=x+1
 	end
@@ -78,6 +78,7 @@ function _update()
 		if(not jumppressed and btn(2)) then 
 			vy=-jumpspd 
 			jumppressed=true
+			floored=false
 		end
 		if(not btn(2)) then
 			jumppressed=false
