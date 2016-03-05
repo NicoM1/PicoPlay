@@ -1,13 +1,25 @@
 pico-8 cartridge // http://www.pico-8.com
 version 5
 __lua__
-x = 0.0	vx = 0.0
-y = 0.0	vy = 0.0
 
-voffx = 2
-voffy = 2
-vsizex = 3
-vsizey = 6
+player = {}
+
+player.x = 0
+player.y = 0
+player.vx = 0
+player.vy = 0
+
+player.voffx = 2
+player.voffy = 2
+player.vsizex = 3
+player.vsizey = 6
+
+player.jumpspd = 3.5
+player.lastflip = false
+player.flipx = false
+player.floored = false
+player.crouch = false
+player.fullspeed = 1.7
 
 camx = 0
 camy = 0
@@ -16,93 +28,86 @@ hw = 64
 
 g = 0.5
 
-jumpspd = 3.5
-
-lastflip = false
-flipx = false
-
-floored = false
-
-crouch = false
-
 last = 0
 
 jumppressed = false
 
 printvalue = "null"
 
-fullspeed = 1.7
-
 function _update()
-	vy += g
+	player:update()
+end
 
-	local speed = fullspeed
+function player:update()
+	self.vy += g
 
-	if(not floored) speed = 0.2
+	local speed = self.fullspeed
 
-	if(not crouch) then
-		if(btn(0)) vx = vx-speed flipx = true
-		if(btn(1)) vx = vx+speed flipx = false
-		if(vx > fullspeed) vx = fullspeed
-		if(vx < -fullspeed) vx = -fullspeed
+	if(not self.floored) speed = 0.2
+
+	if(not self.crouch) then
+		if(btn(0)) self.vx = self.vx-speed self.flipx = true
+		if(btn(1)) self.vx = self.vx+speed self.flipx = false
+		if(self.vx > self.fullspeed) self.vx = self.fullspeed
+		if(self.vx < -self.fullspeed) self.vx = -self.fullspeed
 	end
 
-	if(lastflip == true and flipx == false) x = x+1
-	if(lastflip == false and flipx == true) x = x-1
-	lastflip = flipx
+	if(self.lastflip == true and self.flipx == false)self.x = self.x+1
+	if(self.lastflip == false and self.flipx == true)self.x = self.x-1
+	self.lastflip = self.flipx
 
-	last = vx
+	self.last = self.vx
 
-	floored = false
-	if(collides(0,1)) floored = true
-	if(collides(0,vy)) then
-		floored = true
-		if(vy > 0) then
-			while(not collides(0,1)) do
-				y = y+1
+	self.floored = false
+	if(self:collides(0,1)) self.floored = true
+	if(self:collides(0,self.vy)) then
+		self.floored = true
+		if(self.vy > 0) then
+			while(not self:collides(0,1)) do
+				self.y = self.y+1
 			end
 		else
-			while(not collides(0,-1)) do
-				y = y-1
+			while(not self:collides(0,-1)) do
+				self.y = self.y-1
 			end
 		end
-		vy = 0
-		vx *= 0.7
+		self.vy = 0
+		self.vx *= 0.7
 	end
 
-	if(floored) then
+	if(self.floored) then
 		if(not jumppressed and btn(2)) then
-			floored = false
-			vy = -jumpspd
+			self.floored = false
+			self.vy = -self.jumpspd
 			jumppressed=true
-			printvalue = vx.." "..vy
+			printvalue = self.vx.." "..self.vy
 		end
 
 		if(not btn(2)) jumppressed=false
 	end
-	y += vy
+	self.y += self.vy
 
-	if(collides(vx,0)) then
-		if(vx > 0) then
-			while(not collides(1,0)) do
-				x = x+1
+	if(self:collides(self.vx,0)) then
+		if(self.vx > 0) then
+			while(not self:collides(1,0)) do
+				self.x = self.x+1
 			end
 		else
-			while(not collides(-1,0)) do
-				x = x-1
+			while(not self:collides(-1,0)) do
+				self.x = self.x-1
 			end
 		end
-		vx = 0
+		self.vx = 0
 	end
-	x += vx
-	if(y > 150) then
-		x = 0
-		y = 0
-		vx = 0
-		vy = 0
+	self.x += self.vx
+	if(self.y > 150) then
+		self.x = 0
+		self.y = 0
+		self.vx = 0
+		self.vy = 0
 	end
-	if (vy < 0) floored = false
-	crouch = btn(3)
+	if (self.vy < 0) floored = false
+	self.crouch = btn(3)
 end
 
 function world_to_map(x,y)
@@ -117,20 +122,20 @@ function solid(x,y)
 	return fget(mget(p.x,p.y),0)
 end
 
-function collides(xoff, yoff)
+function player:collides(xoff, yoff)
 	p = {}
 
-	if(flipx) then
-		p.x = x+xoff+(8-voffx-vsizex)
+	if(self.flipx) then
+		p.x = self.x+xoff+(8-self.voffx-self.vsizex)
 	else
-		p.x = x+xoff+voffx
+		p.x = self.x+xoff+self.voffx
 	end
-	p.y = y+yoff+voffy
+	p.y = self.y+yoff+self.voffy
 	return
 		solid(p.x,p.y) or
-		solid(p.x+vsizex-1,p.y) or
-		solid(p.x,p.y+vsizey-1) or
-		solid(p.x+vsizex-1,p.y+vsizey-1)
+		solid(p.x+self.vsizex-1,p.y) or
+		solid(p.x,p.y+self.vsizey-1) or
+		solid(p.x+self.vsizex-1,p.y+self.vsizey-1)
 end
 
 timer = 0
@@ -138,13 +143,17 @@ frametime = 6
 frame = 0
 endf = 1
 function _draw()
-	local camxdif = (x+vx*100)-(camx+hw);
-	camx += camxdif*0.01;
+	--local camxdif = (x+self.vx*100)-(camx+hw);
+	--camx += camxdif*0.01;
 	--camera(flr(camx),flr(camy));
 	cls()
 	map(0,0,0,0,100,100)
+	player:draw();
+	print(printvalue)
+end
 
-	if(abs(vx) > 0.2) then
+function player:draw()
+	if(abs(self.vx) > 0.2) then
 		timer = timer+1
 	end
 	if(timer > frametime) then
@@ -153,16 +162,15 @@ function _draw()
 		if(frame > endf) then frame=0 end
 	end
 
-	if(floored) then
-		if(not crouch) then
-			spr(frame,x,y,1,1,flipx)
+	if(self.floored) then
+		if(not self.crouch) then
+			spr(frame,self.x,self.y,1,1,self.flipx)
 		else
-			spr(3,x,y,1,1,flipx)
+			spr(3,self.x,self.y,1,1,self.flipx)
 		end
 	else
-		spr(2,x,y,1,1,flipx)
+		spr(2,self.x,self.y,1,1,self.flipx)
 	end
-	print(printvalue)
 end
 __gfx__
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
