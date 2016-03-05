@@ -1,7 +1,7 @@
 pico-8 cartridge // http://www.pico-8.com
 version 5
 __lua__
-x=0.0	vx=0.0
+x=0.0 vx=0.0
 y=0.0 vy=0.0
 
 voffx=2
@@ -117,7 +117,7 @@ function world_to_map(x,y)
 	point.x = flr(x/8)
 	point.y = flr(y/8)
 	return point
-end 
+end
 
 function solid(x,y)
 	local p = world_to_map(x,y)
@@ -466,4 +466,3 @@ __music__
 00 41424344
 00 41424344
 00 41424344
-
